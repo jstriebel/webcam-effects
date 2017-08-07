@@ -17,15 +17,15 @@ class VideoServer(Writer):
         return self
 
     def __exit__(self, exit_type, value, traceback):
-        pass
+        self.loop.stop()
 
     def write(self, data):
         self.frame = data
 
     def run_thread(self):
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        app = web.Application(loop=loop)
+        self.loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(self.loop)
+        app = web.Application(loop=self.loop)
         app.router.add_get("/", self.video_handler)
         web.run_app(app, port=self.port, handle_signals=False)
 
