@@ -1,1 +1,4 @@
+aiohttp
+asyncio
+cchardet
 pep8
