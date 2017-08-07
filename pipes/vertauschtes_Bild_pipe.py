@@ -3,9 +3,11 @@ import numpy as np
 
 class VertauschtesBildPipe(Pipe):
     def pipe(self, frame):
-        newframe = np.zeros((480, 640, 3), dtype = np.uint8)
-        newframe[0: 240, : , : ] = frame[240: 480, : , : ]
-        newframe[240: 480, : , : ] = frame[0: 240, : , : ]
+        ysize = frame.shape[1]
+        yhalfsize = ysize / 2
+        newframe = np.zeros(frame.shape, dtype=np.uint8)
+        newframe[0:yhalfsize, :, :] = frame[240:ysize, :, :]
+        newframe[yhalfsize:ysize, :, :] = frame[0:yhalfsize, :, :]
         return newframe
 
     def __enter__(self):
