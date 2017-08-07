@@ -1,0 +1,7 @@
+machine:
+  python:
+    version: 3.5
+
+dependencies:
+  override:
+  	- pep8 --show-source --show-pep8
