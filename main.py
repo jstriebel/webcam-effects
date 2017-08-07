@@ -13,13 +13,16 @@ def get_pipes():
             if pipes.pipe.Pipe in c[1].__bases__
             and c[0] != "Pipeline"]
 
+using_pipes = []
 
 def main():
     pipes = get_pipes()
+    using_pipes.append(pipes[0])
     with \
         Webcam() as cam, \
-        Pipeline(pipes) as pipeline, \
-        VideoServer(port=8080) as video_server:
+        Pipeline(using_pipes) as pipeline, \
+        VideoServer(port=8080, pipes=pipes, using_pipes=using_pipes) \
+            as video_server:
         while True:
             try:
                 frame = cam.read()
@@ -27,7 +30,6 @@ def main():
                 video_server.write(frame)
             except KeyboardInterrupt:
                 break
-
 
 if __name__ == '__main__':
     main()

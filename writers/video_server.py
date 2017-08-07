@@ -7,9 +7,12 @@ from writers.writer import Writer
 
 
 class VideoServer(Writer):
-    def __init__(self, port):
+    def __init__(self, port, pipes, using_pipes):
         self.port = port
         self.frame = None
+        self.using_pipes = using_pipes
+        self.pipes = pipes
+        self.running = True
 
     def __enter__(self):
         self.frame = None
@@ -18,6 +21,7 @@ class VideoServer(Writer):
 
     def __exit__(self, exit_type, value, traceback):
         self.loop.stop()
+        self.running = False
 
     def write(self, data):
         self.frame = data
@@ -26,7 +30,10 @@ class VideoServer(Writer):
         self.loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self.loop)
         app = web.Application(loop=self.loop)
-        app.router.add_get("/", self.video_handler)
+        app.router.add_get("/", self.index_handler)
+        app.router.add_get("/video", self.video_handler)
+        app.router.add_get("/change", self.change_handler)
+        app.router.add_get("/get_filters", self.filters_handler)
         web.run_app(app, port=self.port, handle_signals=False)
 
     async def video_handler(self, request):
@@ -38,7 +45,7 @@ class VideoServer(Writer):
         # The StreamResponse is a FSM. Enter it with a call to prepare.
         await resp.prepare(request)
         
-        while True:
+        while self.running:
             try:
                 if self.frame is not None:
                     img = cv2.imencode('.jpg', self.frame)[1].tostring()
@@ -60,3 +67,16 @@ class VideoServer(Writer):
                 print(repr(e))
                 raise
         return resp
+
+    async def index_handler(self, request):
+        return web.FileResponse('./web/index.html')
+
+    async def change_handler(self, request):
+        self.using_pipes.clear()
+        self.using_pipes.append([x for x in self.pipes 
+                                if x.__class__.__name__ ==
+                                request.query["filter"]][0])
+        return web.Response()
+
+    async def filters_handler(self, request):
+        return web.json_response([x.__class__.__name__ for x in self.pipes])

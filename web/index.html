@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<style>
+
+html, body {
+	height: 100vh;
+	width: 100vw;
+	padding: 0px;
+	margin: 0px;
+	overflow: hidden;
+}
+
+#controller {
+	position: absolute;
+	height: 5vh;
+	width: 80vw;
+	bottom: 0px;
+	left: 10vw;
+	border: 2px solid black;
+	background: rgba(255,255,255,.5);
+	display:table;
+}
+
+#controllerpane {
+	display:table-cell; 
+	text-align:center; 
+	vertical-align:middle;
+	font-family: sans-serif;
+}
+
+#bg {
+	background: url("/video");
+	background-size: contain;
+	height: 100vh;
+	background-position: center;
+	background-repeat: no-repeat;
+	width: 100vw;
+}
+
+</style>
+
+<script type="text/javascript">
+	"use strict";
+
+	$(function() {
+		$.get("/get_filters", function(res) {
+			for (var x of res) {
+				$('#selector').append($('<option>', {
+    				value: x,
+    				text: x
+				}));
+			}
+		});
+		$("#selector").change(function() {
+			$.get("/change?filter=" + $("#selector").val())
+		});
+
+	});
+
+</script>
+<title>Videostream</title>
+</head>
+<body>
+<div id="bg"/>
+<div id="controller">
+<div id="controllerpane">
+Filter: 
+<select id="selector">  
+</select>
+</div>
+
+<div>
+</body>
+
+</html>
