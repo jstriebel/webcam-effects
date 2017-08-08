@@ -5,7 +5,7 @@ import time
 import pipes.pipe
 from pipes import *
 from writers import VideoServer
-from sensors.webcam import Webcam
+from sensors.pisensor import PiSensor
 
 def get_pipes():
     classes = inspect.getmembers(sys.modules[__name__], inspect.isclass)
@@ -19,7 +19,7 @@ def main():
     pipes = get_pipes()
     using_pipes.append(pipes[0])
     with \
-        Webcam() as cam, \
+        PiSensor() as cam, \
         Pipeline(using_pipes) as pipeline, \
         VideoServer(port=8080, pipes=pipes, using_pipes=using_pipes) \
             as video_server:
