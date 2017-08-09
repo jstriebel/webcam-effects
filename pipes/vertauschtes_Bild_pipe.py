@@ -2,12 +2,12 @@ from pipes.pipe import Pipe
 import numpy as np
 
 class VertauschtesBildPipe(Pipe):
-    def pipe(self, frame):
-        ysize = frame.shape[1]
+    def pipe(self, img):
+        ysize = img.shape[0]
         yhalfsize = ysize / 2
-        newframe = np.zeros(frame.shape, dtype=np.uint8)
-        newframe[0:yhalfsize, :, :] = frame[240:ysize, :, :]
-        newframe[yhalfsize:ysize, :, :] = frame[0:yhalfsize, :, :]
+        newframe = np.zeros(img.shape, dtype=np.uint8)
+        newframe[:yhalfsize, :, :] = img[yhalfsize:ysize, :, :]
+        newframe[yhalfsize:ysize, :, :] = img[:yhalfsize, :, :]
         return newframe
 
     def __enter__(self):
